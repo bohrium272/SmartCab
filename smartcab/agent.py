@@ -23,7 +23,7 @@ class LearningAgent(Agent):
         # TODO: Prepare for a new trip; reset any variables here, if required
         self.last_reward = 0
         self.last_action = None
-        self.state = 'Random'
+        self.state = None
 
     def update(self, t):
         # Gather inputs
@@ -32,6 +32,10 @@ class LearningAgent(Agent):
         deadline = self.env.get_deadline(self)
         available_actions = []
         # TODO: Update state
+
+        self.state = (str(inputs), self.next_waypoint)
+        # TODO: Select action according to your policy
+
         if inputs['light'] == 'red':
             """
                 Red Light means :
@@ -49,23 +53,14 @@ class LearningAgent(Agent):
             available_actions = ['right', 'left', 'forward']
             if inputs['oncoming'] == 'forward':
                 available_actions.remove('left')
-        # TODO: Select action according to your policy
-        
         action = None
-        if available_actions != []:# and self.state == 'Random':
+        if available_actions != []:
             action = random.choice(available_actions)
-        # elif available_actions != [] and self.state == 'Static':
-        #     action = self.last_action
 
         # Execute action and get reward
         reward = self.env.act(self, action)
 
         # TODO: Learn policy based on state, action, reward
-        # if action != None:
-        #     if reward > self.last_reward:
-        #         self.state = 'Static'
-        #     else:
-        #         self.state = 'Random'
         self.last_action = action
         self.last_reward = reward
 

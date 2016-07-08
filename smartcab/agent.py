@@ -39,22 +39,22 @@ class LearningAgent(Agent):
                     No action
             """
             if inputs['oncoming'] != 'left':
-                possible_actions = [None, 'right']
+                available_actions = [None, 'right']
         else:
             """
                 Green Light means :
                     Left only if no forward oncoming traffic
                     Perform atleast some action
             """        
-            possible_actions = ['right', 'left', 'forward']
+            available_actions = ['right', 'left', 'forward']
             if inputs['oncoming'] == 'forward':
-                possible_actions.remove('left')
+                available_actions.remove('left')
         # TODO: Select action according to your policy
         
         action = None
-        if self.state == 'Random':
-            action = random.choice(possible_actions)
-        elif self.state == 'Static':
+        if available_actions != [] and self.state == 'Random':
+            action = random.choice(available_actions)
+        elif available_actions != [] and self.state == 'Static':
             action = self.last_action
 
         # Execute action and get reward
@@ -69,7 +69,7 @@ class LearningAgent(Agent):
             self.last_action = action
             self.last_reward = reward
 
-        print "LearningAgent.update(): deadline = {}, inputs = {}, action = {}, reward = {}".format(deadline, inputs, action, reward)  # [debug]
+        # print "LearningAgent.update(): deadline = {}, inputs = {}, action = {}, reward = {}".format(deadline, inputs, action, reward)  # [debug]
 
 
 def run():

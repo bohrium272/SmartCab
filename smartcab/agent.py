@@ -1,4 +1,5 @@
 import random
+import numpy as np
 from environment import Agent, Environment
 from planner import RoutePlanner
 from simulator import Simulator
@@ -11,10 +12,19 @@ class LearningAgent(Agent):
         self.color = 'red'  # override color
         self.planner = RoutePlanner(self.env, self)  # simple route planner to get next_waypoint
         # TODO: Initialize any additional variables here
+        self.last_reward = 0
+        self.last_action = None
+        self.state = 'Random'
+        self.APLHA = 1
+        self.GAMMA = 2
+        self.all_actions = ['right', 'forward', 'none', 'left']
 
     def reset(self, destination=None):
         self.planner.route_to(destination)
         # TODO: Prepare for a new trip; reset any variables here, if required
+        self.last_reward = 0
+        self.last_action = None
+        self.state = 'Random'
 
     def update(self, t):
         # Gather inputs
@@ -23,6 +33,8 @@ class LearningAgent(Agent):
         deadline = self.env.get_deadline(self)
 
         # TODO: Update state
+        if inputs['light'] == 'red':
+
         
         # TODO: Select action according to your policy
         action = None

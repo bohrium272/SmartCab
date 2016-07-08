@@ -17,7 +17,6 @@ class LearningAgent(Agent):
         self.state = 'Random'
         self.APLHA = 1
         self.GAMMA = 2
-        self.all_actions = ['right', 'forward', 'none', 'left']
 
     def reset(self, destination=None):
         self.planner.route_to(destination)
@@ -31,18 +30,44 @@ class LearningAgent(Agent):
         self.next_waypoint = self.planner.next_waypoint()  # from route planner, also displayed by simulator
         inputs = self.env.sense(self)
         deadline = self.env.get_deadline(self)
-
+        available_actions = []
         # TODO: Update state
         if inputs['light'] == 'red':
-
-        
+            """
+                Red Light means :
+                    Left when no oncoming traffic
+                    No action
+            """
+            if inputs['oncoming'] != 'left':
+                possible_actions = [None, 'right']
+        else:
+            """
+                Green Light means :
+                    Left only if no forward oncoming traffic
+                    Perform atleast some action
+            """        
+            possible_actions = ['right', 'left', 'forward']
+            if inputs['oncoming'] == 'forward':
+                possible_actions.remove('left')
         # TODO: Select action according to your policy
+        
         action = None
+        if self.state == 'Random':
+            action = random.choice(possible_actions)
+        elif self.state == 'Static':
+            action = self.last_action
 
         # Execute action and get reward
         reward = self.env.act(self, action)
 
         # TODO: Learn policy based on state, action, reward
+        if action != None:
+            if reward > self.last_reward:
+                self.state = 'Static'
+            else:
+                self.state = 'Random'
+            self.last_action = action
+            self.last_reward = reward
 
         print "LearningAgent.update(): deadline = {}, inputs = {}, action = {}, reward = {}".format(deadline, inputs, action, reward)  # [debug]
 

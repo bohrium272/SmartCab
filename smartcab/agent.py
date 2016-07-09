@@ -31,7 +31,8 @@ class LearningAgent(Agent):
         available_actions = []
         # TODO: Update state
 
-        self.state = (str(inputs), self.next_waypoint, self.deadline)
+        self.state = (str(inputs), self.next_waypoint)
+        #, self.deadline)
         # TODO: Select action according to your policy
 
         if inputs['light'] == 'red':
@@ -71,7 +72,7 @@ def run():
     # Set up environment and agent
     e = Environment()  # create environment (also adds some dummy traffic)
     a = e.create_agent(LearningAgent)  # create agent
-    e.set_primary_agent(a, enforce_deadline=True)  # specify agent to track
+    e.set_primary_agent(a, enforce_deadline=False)  # specify agent to track
     # NOTE: You can set enforce_deadline=False while debugging to allow longer trials
 
     # Now simulate it

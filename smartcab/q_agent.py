@@ -30,6 +30,22 @@ class qLearningAgent(Agent):
         self.last_state = None
         self.epsilon = 0.0
 
+    def get_q(self, state):
+        return self.q_table.get((state, action), 0.0)
+
+    def get_action_by_policy(self, state):
+        best_action = None
+
+    def get_action(self, state):
+        action = None
+        factor = random.random()
+        if factor < 0.5:
+            #TO-DO: Choose a random action
+            action = random.choice(self.ACTIONS)
+        else:
+            #TO-DO: Choose action according to policy
+            return get_action_policy(self, state)
+
     def update(self, t):
         # Gather inputs
         self.next_waypoint = self.planner.next_waypoint()  # from route planner, also displayed by simulator
@@ -37,15 +53,18 @@ class qLearningAgent(Agent):
         deadline = self.env.get_deadline(self)
 
         # TODO: Update state
-        
+        self.state = (inputs, self.next_waypoint, action)
         # TODO: Select action according to your policy
-        action = None
+        action = self.get_action(self, state)
 
         # Execute action and get reward
         reward = self.env.act(self, action)
-
         # TODO: Learn policy based on state, action, reward
-
+        if self.last_reward != None:
+            self.update_q_values(self.last_state, self.last_action, self.last_reward, self.state)
+        self.last_action = action
+        self.last_state = self.state
+        self.last_reward = reward
         print "LearningAgent.update(): deadline = {}, inputs = {}, action = {}, reward = {}".format(deadline, inputs, action, reward)  # [debug]
 
 

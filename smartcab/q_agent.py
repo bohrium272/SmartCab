@@ -4,65 +4,49 @@ from environment import Agent, Environment
 from planner import RoutePlanner
 from simulator import Simulator
 
-class LearningAgent(Agent):
-    """An agent that learns to drive in the smartcab world."""
-
+class qLearningAgent(Agent):
+    """Q Learner for Smart Cab"""
     def __init__(self, env):
-        super(LearningAgent, self).__init__(env)  # sets self.env = env, state = None, next_waypoint = None, and a default color
+        super(qLearningAgent, self).__init__(env)  # sets self.env = env, state = None, next_waypoint = None, and a default color
         self.color = 'red'  # override color
         self.planner = RoutePlanner(self.env, self)  # simple route planner to get next_waypoint
         # TODO: Initialize any additional variables here
-        self.last_reward = 0
-        self.last_action = None
         self.state = None
+        self.last_state = None
+        self.action = None
+        self.last_action = None
+        self.last_reward = 0
+        self.alpha = 0.5
+        self.gamma = 0.35
+        self.epsilon = 0.0
+        self.q_table = dict()
+        self.ACTIONS = ['forward', 'left', 'right', None]
 
     def reset(self, destination=None):
         self.planner.route_to(destination)
         # TODO: Prepare for a new trip; reset any variables here, if required
-        self.last_reward = 0
         self.last_action = None
         self.state = None
+        self.last_state = None
+        self.epsilon = 0.0
 
     def update(self, t):
         # Gather inputs
         self.next_waypoint = self.planner.next_waypoint()  # from route planner, also displayed by simulator
         inputs = self.env.sense(self)
         deadline = self.env.get_deadline(self)
-        available_actions = []
+
         # TODO: Update state
-
-        self.state = (str(inputs), self.next_waypoint, self.deadline)
+        
         # TODO: Select action according to your policy
-
-        if inputs['light'] == 'red':
-            """
-                Red Light means :
-                    Left when no oncoming traffic
-                    No action
-            """
-            if inputs['oncoming'] != 'left':
-                available_actions = [None, 'right']
-        else:
-            """
-                Green Light means :
-                    Left only if no forward oncoming traffic
-                    Perform atleast some action
-            """        
-            available_actions = ['right', 'left', 'forward']
-            if inputs['oncoming'] == 'forward':
-                available_actions.remove('left')
         action = None
-        if available_actions != []:
-            action = random.choice(available_actions)
 
         # Execute action and get reward
         reward = self.env.act(self, action)
 
         # TODO: Learn policy based on state, action, reward
-        self.last_action = action
-        self.last_reward = reward
 
-        # print "LearningAgent.update(): deadline = {}, inputs = {}, action = {}, reward = {}".format(deadline, inputs, action, reward)  # [debug]
+        print "LearningAgent.update(): deadline = {}, inputs = {}, action = {}, reward = {}".format(deadline, inputs, action, reward)  # [debug]
 
 
 def run():

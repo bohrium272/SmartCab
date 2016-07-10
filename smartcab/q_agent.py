@@ -18,7 +18,7 @@ class qLearningAgent(Agent):
         self.last_reward = 0
         self.alpha = 0.9
         self.gamma = 0.35
-        self.epsilon = 0.0005
+        self.epsilon = 0.001
         self.q_table = dict()
         self.ACTIONS = ['forward', 'left', 'right', None]
 
@@ -28,7 +28,10 @@ class qLearningAgent(Agent):
         self.last_action = None
         self.state = None
         self.last_state = None
-        self.epsilon = 0.40005
+        self.epsilon = 0.001
+        self.last_reward = 0
+        self.alpha = 0.9
+        self.gamma = 0.35
 
     def get_q(self, state, action):
         return self.q_table.get((state, action), 19.75)
@@ -59,10 +62,10 @@ class qLearningAgent(Agent):
         action = None
         factor = random.random()
         if factor < self.epsilon:
-            print "random"
+            # print "random"
             action = random.choice(self.ACTIONS)
         else:
-            print "policy"
+            # print "policy"
             action = self.get_action_by_policy(state)
         return action
     
@@ -81,7 +84,7 @@ class qLearningAgent(Agent):
         deadline = self.env.get_deadline(self)
 
         # TODO: Update state
-        self.state = (str(inputs), self.next_waypoint)
+        self.state = (str(inputs), self.next_waypoint, deadline)
         # TODO: Select action according to your policy
         action = self.get_action(self.state)
 

@@ -16,9 +16,9 @@ class qLearningAgent(Agent):
         self.action = None
         self.last_action = None
         self.last_reward = 0
-        self.alpha = 0.5
+        self.alpha = 0.9
         self.gamma = 0.35
-        self.epsilon = 0.0
+        self.epsilon = 0.0005
         self.q_table = dict()
         self.ACTIONS = ['forward', 'left', 'right', None]
 
@@ -28,23 +28,51 @@ class qLearningAgent(Agent):
         self.last_action = None
         self.state = None
         self.last_state = None
-        self.epsilon = 0.0
+        self.epsilon = 0.40005
 
-    def get_q(self, state):
-        return self.q_table.get((state, action), 0.0)
+    def get_q(self, state, action):
+        return self.q_table.get((state, action), 19.75)
+
+    def get_value(self, state):
+        best_q = -float('inf')
+        for action in self.ACTIONS:
+            if self.get_q(state, action) > best_q:
+                best_q = self.get_q(state, action)
+        return best_q
 
     def get_action_by_policy(self, state):
         best_action = None
+        best_q = -float('inf')
+        for action in self.ACTIONS:
+            temp_value = self.get_q(state, action)
+            if temp_value > best_q:
+                best_q = temp_value
+                best_action = action
+            if temp_value == best_q:
+                factor = random.random()
+                if factor < 0.5:
+                    best_q = temp_value
+                    best_action = action
+        return best_action
 
     def get_action(self, state):
         action = None
         factor = random.random()
-        if factor < 0.5:
-            #TO-DO: Choose a random action
+        if factor < self.epsilon:
+            print "random"
             action = random.choice(self.ACTIONS)
         else:
-            #TO-DO: Choose action according to policy
-            return get_action_policy(self, state)
+            print "policy"
+            action = self.get_action_by_policy(state)
+        return action
+    
+    def update_q_values(self, state, action, reward, future_state):
+        if (state, action) not in self.q_table.keys():
+            self.q_table[(state, action)] = 19.75
+        else:
+            temp = self.q_table[(state, action)]
+            temp = ((1 - self.alpha) * temp) + ((self.alpha) * (reward + self.gamma * self.get_value(future_state) - temp))  
+            self.q_table[(state, action)] = temp
 
     def update(self, t):
         # Gather inputs
@@ -53,9 +81,9 @@ class qLearningAgent(Agent):
         deadline = self.env.get_deadline(self)
 
         # TODO: Update state
-        self.state = (inputs, self.next_waypoint, action)
+        self.state = (str(inputs), self.next_waypoint)
         # TODO: Select action according to your policy
-        action = self.get_action(self, state)
+        action = self.get_action(self.state)
 
         # Execute action and get reward
         reward = self.env.act(self, action)
@@ -65,25 +93,4 @@ class qLearningAgent(Agent):
         self.last_action = action
         self.last_state = self.state
         self.last_reward = reward
-        print "LearningAgent.update(): deadline = {}, inputs = {}, action = {}, reward = {}".format(deadline, inputs, action, reward)  # [debug]
-
-
-def run():
-    """Run the agent for a finite number of trials."""
-
-    # Set up environment and agent
-    e = Environment()  # create environment (also adds some dummy traffic)
-    a = e.create_agent(LearningAgent)  # create agent
-    e.set_primary_agent(a, enforce_deadline=True)  # specify agent to track
-    # NOTE: You can set enforce_deadline=False while debugging to allow longer trials
-
-    # Now simulate it
-    sim = Simulator(e, update_delay=0.5, display=True)  # create simulator (uses pygame when display=True, if available)
-    # NOTE: To speed up simulation, reduce update_delay and/or set display=False
-
-    sim.run(n_trials=100)  # run for a specified number of trials
-    # NOTE: To quit midway, press Esc or close pygame window, or hit Ctrl+C on the command-line
-
-
-if __name__ == '__main__':
-    run()
+        # print "LearningAgent.update(): deadline = {}, inputs = {}, action = {}, reward = {}".format(deadline, inputs, action, reward)  # [debug]

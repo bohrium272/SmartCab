@@ -3,7 +3,7 @@ import numpy as np
 from environment import Agent, Environment
 from planner import RoutePlanner
 from simulator import Simulator
-
+from q_agent import qLearningAgent
 class LearningAgent(Agent):
     """An agent that learns to drive in the smartcab world."""
 
@@ -71,8 +71,8 @@ def run():
 
     # Set up environment and agent
     e = Environment()  # create environment (also adds some dummy traffic)
-    a = e.create_agent(LearningAgent)  # create agent
-    e.set_primary_agent(a, enforce_deadline=False)  # specify agent to track
+    a = e.create_agent(qLearningAgent)  # create agent
+    e.set_primary_agent(a, enforce_deadline=True)  # specify agent to track
     # NOTE: You can set enforce_deadline=False while debugging to allow longer trials
 
     # Now simulate it

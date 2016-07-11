@@ -73,7 +73,10 @@ class qLearningAgent(Agent):
         if (state, action) not in self.q_table.keys():
             self.q_table[(state, action)] = 19.75
         else:
-            self.q_table[(state, action)] = self.q_table[(state, action)] + self.alpha*(reward + self.gamma*self.get_value(future_state) - self.q_table[(state, action)])
+            temp = self.q_table[(state, action)]
+            # self.q_table[(state, action)] = self.q_table[(state, action)] + self.alpha*(reward + self.gamma*self.get_value(future_state) - self.q_table[(state, action)])
+            temp = (1 - self.alpha) * temp + (self.alpha) * (reward + (self.gamma) * (self.get_value(future_state)))
+            self.q_table[(state, action)] = temp
 
     def update(self, t):
         # Gather inputs

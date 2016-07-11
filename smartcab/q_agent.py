@@ -73,9 +73,7 @@ class qLearningAgent(Agent):
         if (state, action) not in self.q_table.keys():
             self.q_table[(state, action)] = 19.75
         else:
-            temp = self.q_table[(state, action)]
-            temp = ((1 - self.alpha) * temp) + ((self.alpha) * (reward + self.gamma * self.get_value(future_state) - temp))  
-            self.q_table[(state, action)] = temp
+            self.q_table[(state, action)] = self.q_table[(state, action)] + self.alpha*(reward + self.gamma*self.get_value(future_state) - self.q_table[(state, action)])
 
     def update(self, t):
         # Gather inputs
@@ -84,7 +82,7 @@ class qLearningAgent(Agent):
         deadline = self.env.get_deadline(self)
 
         # TODO: Update state
-        self.state = (str(inputs), self.next_waypoint, deadline)
+        self.state = (inputs['oncoming'], inputs['light'], self.next_waypoint)
         # TODO: Select action according to your policy
         action = self.get_action(self.state)
 

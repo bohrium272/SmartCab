@@ -33,7 +33,7 @@ for i in range(0, 100):
 plt.plot(range(0, 100), values2, label='Random Learning Agent', color='r', marker='.')
 
 plt.title('Negative Rewards in each trial')
-plt.xlabel('Trial Index')
+plt.xlabel('Number of Trials')
 plt.ylabel('Frequency of Negative Rewards')
 plt.legend()
 plt.show()

@@ -31,7 +31,7 @@ class LearningAgent(Agent):
         available_actions = []
         # TODO: Update state
 
-        self.state = (str(inputs), self.next_waypoint)
+        self.state = (inputs['oncoming'], inputs['light'], self.next_waypoint)
         #, self.deadline)
         # TODO: Select action according to your policy
 
@@ -62,7 +62,8 @@ class LearningAgent(Agent):
         # TODO: Learn policy based on state, action, reward
         self.last_action = action
         self.last_reward = reward
-
+        if reward < 0:
+            print "Negative Reward"
         # print "LearningAgent.update(): deadline = {}, inputs = {}, action = {}, reward = {}".format(deadline, inputs, action, reward)  # [debug]
 
 
@@ -71,7 +72,7 @@ def run():
 
     # Set up environment and agent
     e = Environment()  # create environment (also adds some dummy traffic)
-    a = e.create_agent(qLearningAgent)  # create agent
+    a = e.create_agent(LearningAgent)  # create agent
     e.set_primary_agent(a, enforce_deadline=True)  # specify agent to track
     # NOTE: You can set enforce_deadline=False while debugging to allow longer trials
 
@@ -79,9 +80,8 @@ def run():
     sim = Simulator(e, update_delay=0.5, display=False)  # create simulator (uses pygame when display=True, if available)
     # NOTE: To speed up simulation, reduce update_delay and/or set display=False
 
-    sim.run(n_trials=200)  # run for a specified number of trials
+    sim.run(n_trials=100)  # run for a specified number of trials
     # NOTE: To quit midway, press Esc or close pygame window, or hit Ctrl+C on the command-line
-
-
+    
 if __name__ == '__main__':
     run()

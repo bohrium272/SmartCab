@@ -16,6 +16,7 @@ class qLearningAgent(Agent):
         self.action = None
         self.last_action = None
         self.last_reward = 0
+        self.neg_reward = 0
         self.alpha = 0.9
         self.gamma = 0.35
         self.epsilon = 0.001
@@ -28,15 +29,15 @@ class qLearningAgent(Agent):
         self.last_action = None
         self.state = None
         self.last_state = None
-        self.epsilon = 0.001
         self.last_reward = 0
+        self.neg_reward = 0
         self.alpha = 0.9
         self.gamma = 0.35
+        self.epsilon = 0.001
 
     def get_q(self, state, action):
         return self.q_table.get((state, action), 19.75)
-
-    def get_value(self, state):
+    def get_best_q(self, state):
         best_q = -float('inf')
         for action in self.ACTIONS:
             if self.get_q(state, action) > best_q:
@@ -74,8 +75,8 @@ class qLearningAgent(Agent):
             self.q_table[(state, action)] = 19.75
         else:
             temp = self.q_table[(state, action)]
-            # self.q_table[(state, action)] = self.q_table[(state, action)] + self.alpha*(reward + self.gamma*self.get_value(future_state) - self.q_table[(state, action)])
-            temp = (1 - self.alpha) * temp + (self.alpha) * (reward + (self.gamma) * (self.get_value(future_state)))
+            # self.q_table[(state, action)] = self.q_table[(state, action)] + self.alpha*(reward + self.gamma*self.get_best_q(future_state) - self.q_table[(state, action)])
+            temp = (1 - self.alpha) * temp + (self.alpha) * (reward + (self.gamma) * (self.get_best_q(future_state)))
             self.q_table[(state, action)] = temp
 
     def update(self, t):
@@ -85,7 +86,7 @@ class qLearningAgent(Agent):
         deadline = self.env.get_deadline(self)
 
         # TODO: Update state
-        self.state = (inputs['oncoming'], inputs['light'], self.next_waypoint)
+        self.state = (inputs['oncoming'], inputs['light'], inputs['left'], self.next_waypoint)
         # TODO: Select action according to your policy
         action = self.get_action(self.state)
 
@@ -97,4 +98,6 @@ class qLearningAgent(Agent):
         self.last_action = action
         self.last_state = self.state
         self.last_reward = reward
+        if reward < 0:
+            print "Negative Reward"
         # print "LearningAgent.update(): deadline = {}, inputs = {}, action = {}, reward = {}".format(deadline, inputs, action, reward)  # [debug]

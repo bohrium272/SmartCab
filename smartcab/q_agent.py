@@ -98,6 +98,6 @@ class qLearningAgent(Agent):
         self.last_action = action
         self.last_state = self.state
         self.last_reward = reward
-        if reward < 0:
-            print "Negative Reward"
-        # print "LearningAgent.update(): deadline = {}, inputs = {}, action = {}, reward = {}".format(deadline, inputs, action, reward)  # [debug]
+        # if reward < 0:
+        #     print "Negative Reward"
+        print "LearningAgent.update(): deadline = {}, inputs = {}, action = {}, reward = {}".format(deadline, inputs, action, reward)  # [debug]
